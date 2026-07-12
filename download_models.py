@@ -74,7 +74,7 @@ def main():
     parser.add_argument("--output-dir", default="models")
     parser.add_argument(
         "--size",
-        default="small",
+        default="medium",
         choices=["tiny", "small", "medium", "all"],
     )
     args = parser.parse_args()

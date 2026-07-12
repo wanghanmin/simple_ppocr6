@@ -18,11 +18,11 @@
 - **简易可视化**：内置 `displaybox` 方法，可直接画出检测框查看效果
 - **易于集成**：既可作为脚本运行，也可在其他 Python 项目中 `import simple_ppocr6` 作为库使用
 - **HTTP 服务**：提供生产级 HTTP API 服务（可选）
-- **双规格模型**：`model_size='small'`（默认，更快）与 `'medium'`（更高精度）
+- **三种规格模型**：`model_size='medium'`（默认，随仓库）· `'small'` / `'tiny'`（可选，需自行下载）
 
 ### 性能参考
 
-默认 **`model_size='small'`**；需要更高精度时用 **`medium`**（显存约 1.7GB）。
+默认 **`model_size='medium'`**，克隆仓库即可使用；更快或低显存可选用 **`small`**（~800MB）或 **`tiny`**（~550MB），需先运行 `download_models.py`。
 
 **1080p 全量 OCR**（1920×1080，GPU，HEURISTIC，无 cuDNN Fallback）：
 
@@ -51,12 +51,13 @@ pip install -r requirements.txt
 
 ### 模型文件
 
-本项目使用 **PaddleOCR PP-OCRv6** 的 ONNX 导出模型。通过 `model_size` 选择规格（默认 `small`）：
+本项目使用 **PaddleOCR PP-OCRv6** 的 ONNX 导出模型。通过 `model_size` 选择规格（默认 `medium`）：
 
-| 规格 | 检测 | 识别 | 字典 |
-|------|------|------|------|
-| `small`（默认） | `ppocr6_s_det.onnx` | `ppocr6_s_rec.onnx` | `ppocr6_s_dict.txt` |
-| `medium` | `ppocr6_m_det.onnx` | `ppocr6_m_rec.onnx` | `ppocr6_dict.txt`（18708 字符，50 语种） |
+| 规格 | 检测 | 识别 | 字典 | 说明 |
+|------|------|------|------|------|
+| `medium`（默认） | `ppocr6_m_det.onnx` | `ppocr6_m_rec.onnx` | `ppocr6_dict.txt`（18708 字符，50 语种） | **随仓库提供**，克隆即用 |
+| `small` | `ppocr6_s_det.onnx` | `ppocr6_s_rec.onnx` | `ppocr6_s_dict.txt` | 可选，`download_models.py --size small` |
+| `tiny` | `ppocr6_t_det.onnx` | `ppocr6_t_rec.onnx` | `ppocr6_t_dict.txt`（6904 字符） | 可选，`download_models.py --size tiny` |
 
 共用模型：
 
@@ -64,11 +65,11 @@ pip install -r requirements.txt
 
 > **说明**：模型文件来源于 [PaddlePaddle HuggingFace](https://huggingface.co/collections/PaddlePaddle/pp-ocrv6)。使用模型时请遵守其原始许可证和使用条款。
 
-将上述文件放到仓库根目录下的 `models/` 目录，保持默认路径，即可正常使用。若缺失模型，可运行：
+将上述文件放到仓库根目录下的 `models/` 目录，保持默认路径，即可正常使用。克隆仓库已包含 **medium** 全套；若需 tiny/small 或重新下载 medium，可运行：
 
 ```bash
 pip install huggingface_hub pyyaml
-python download_models.py --size small
+python download_models.py --size tiny    # 或 small / medium
 ```
 
 ### 安装与使用
@@ -89,7 +90,7 @@ pip install -r requirements.txt
 ```python
 from simple_ppocr6 import simple_ppocr6
 
-ocr = simple_ppocr6(model_size='small', use_gpu=True)  # 推荐：small + GPU
+ocr = simple_ppocr6(use_gpu=True)  # 默认 medium，克隆即用
 ocr.run("path/to/your/image.jpg")
 
 # 可选：仅 det 定位 / 局部 rec（默认全量识别，不截断框）
@@ -114,10 +115,10 @@ for item in ocr.results:
 运行示例：
 
 ```bash
-python ocr_image.py                    # example.jpg，CPU small
+python ocr_image.py                    # example.jpg，默认 medium
 python ocr_image.py your.jpg --gpu     # 指定图片 + GPU
-python winclip_ocr.py                  # 剪贴板 OCR（默认 small + GPU）
-python winclip_ocr.py --cpu --model-size medium
+python winclip_ocr.py                  # 剪贴板 OCR（默认 medium + GPU）
+python winclip_ocr.py --model-size small   # 需先 download_models.py --size small
 ```
 #### 2. HTTP API 服务
 
@@ -201,7 +202,7 @@ for item in result['results']:
 
 ### 注意事项
 
-- 模型文件体积较大，运行 `python download_models.py --size small` 下载（默认 small）
+- 仓库自带 **medium** 模型（约 133MB）；tiny/small 为可选，运行 `python download_models.py --size tiny|small`
 - GPU 需安装 `onnxruntime-gpu` 与匹配的 CUDA/cuDNN；Linux 服务器需将 cuDNN 库加入 `LD_LIBRARY_PATH`
 - ORT 1.20+ 请勿使用 `DEFAULT` cuDNN 算法（本库已默认 HEURISTIC）
 - `medium` 约需 1.7GB 显存；8GB 显卡建议 `small`（~800MB）
@@ -227,11 +228,11 @@ A simple Python OCR library based on Baidu PaddleOCR **PP-OCRv6** models, runnin
 - **Easy Visualization**: Built-in `displaybox` method to draw detection boxes
 - **Easy Integration**: Can be used as a script or imported as a library in other Python projects
 - **HTTP Service**: Production-ready HTTP API service (optional)
-- **Two model sizes**: `model_size='small'` (default, faster) and `'medium'` (higher accuracy)
+- **Three model sizes**: `model_size='medium'` (default, bundled), `'small'` / `'tiny'` (optional, download separately)
 
 ### Performance
 
-Default **`model_size='small'`**; use **`medium`** for highest accuracy (~1.7GB VRAM).
+Default **`model_size='medium'`** — clone and run. For faster inference or lower VRAM, use **`small`** (~800MB) or **`tiny`** (~550MB) after `download_models.py`.
 
 **1080p full OCR** (1920×1080, GPU, HEURISTIC, no cuDNN Fallback):
 
@@ -260,12 +261,13 @@ pip install -r requirements.txt
 
 ### Model Files
 
-This project uses **PaddleOCR PP-OCRv6** ONNX exported models. Choose size via `model_size` (default `small`):
+This project uses **PaddleOCR PP-OCRv6** ONNX exported models. Choose size via `model_size` (default `medium`):
 
-| Size | Detection | Recognition | Dictionary |
-|------|-----------|-------------|------------|
-| `small` (default) | `ppocr6_s_det.onnx` | `ppocr6_s_rec.onnx` | `ppocr6_s_dict.txt` |
-| `medium` | `ppocr6_m_det.onnx` | `ppocr6_m_rec.onnx` | `ppocr6_dict.txt` (18708 chars, 50 languages) |
+| Size | Detection | Recognition | Dictionary | Notes |
+|------|-----------|-------------|------------|-------|
+| `medium` (default) | `ppocr6_m_det.onnx` | `ppocr6_m_rec.onnx` | `ppocr6_dict.txt` (18708 chars, 50 languages) | **Bundled** — clone and run |
+| `small` | `ppocr6_s_det.onnx` | `ppocr6_s_rec.onnx` | `ppocr6_s_dict.txt` | Optional: `download_models.py --size small` |
+| `tiny` | `ppocr6_t_det.onnx` | `ppocr6_t_rec.onnx` | `ppocr6_t_dict.txt` (6904 chars) | Optional: `download_models.py --size tiny` |
 
 Shared:
 
@@ -273,11 +275,11 @@ Shared:
 
 > **Note**: Model files are from the [PaddlePaddle HuggingFace](https://huggingface.co/collections/PaddlePaddle/pp-ocrv6) collection. Please comply with the original license and terms of use.
 
-Place these files in the `models/` directory under the repository root to use the default paths. If missing, run:
+Place these files in the `models/` directory under the repository root. **Medium** is included in the repo; for tiny/small or to re-download medium:
 
 > ```bash
 > pip install huggingface_hub pyyaml
-> python download_models.py --size small
+> python download_models.py --size tiny    # or small / medium
 > ```
 
 ### Installation & Usage
@@ -302,7 +304,7 @@ Here is a minimal example to run OCR on a single image:
 ```python
 from simple_ppocr6 import simple_ppocr6
 
-ocr = simple_ppocr6(model_size='small', use_gpu=True)
+ocr = simple_ppocr6(use_gpu=True)  # default medium, bundled in repo
 ocr.run("path/to/your/image.jpg")
 
 for item in ocr.results:
@@ -323,10 +325,10 @@ For more examples, please refer to `ocr_image.py` and `winclip_ocr.py` in the re
 Run examples:
 
 ```bash
-python ocr_image.py
+python ocr_image.py                    # example.jpg, default medium
 python ocr_image.py your.jpg --gpu
-python winclip_ocr.py
-python winclip_ocr.py --cpu --model-size medium
+python winclip_ocr.py                  # clipboard OCR, default medium + GPU
+python winclip_ocr.py --model-size small   # requires download_models.py --size small
 ```
 #### 2. HTTP API Service
 
@@ -410,7 +412,7 @@ for item in result['results']:
 
 ### Notes
 
-- Download models: `python download_models.py --size small`
+- **Medium** models are bundled (~133MB); tiny/small are optional via `python download_models.py --size tiny|small`
 - GPU requires `onnxruntime-gpu` and CUDA/cuDNN; on Linux add cuDNN to `LD_LIBRARY_PATH`
 - Do not use ORT `DEFAULT` cuDNN algo on 1.20+ (library defaults to HEURISTIC)
 - `medium` needs ~1.7GB VRAM; on 8GB GPUs prefer `small` (~800MB)

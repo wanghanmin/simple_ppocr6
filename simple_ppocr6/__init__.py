@@ -1,6 +1,6 @@
 """PP-OCRv6 ONNXRuntime OCR (no PaddleOCR framework).
 
-Default model_size='small' for speed; use 'medium' for best quality.
+Default model_size='medium' (bundled in repo). Optional: 'tiny' / 'small' via download_models.py.
 
 Full-screen optional speed modes (default: recognize every detected box):
   det runs on the whole image (limit_side_len=960); rec/ori crops from original pixels.
@@ -41,7 +41,7 @@ def _cuda_provider_options(algo=None):
     }
 
 
-def _onnx_providers(use_gpu, session='det', model_size='small'):
+def _onnx_providers(use_gpu, session='det', model_size='medium'):
     if not use_gpu:
         return ['CPUExecutionProvider']
     if session == 'rec':
@@ -83,7 +83,7 @@ class simple_ppocr6():
         ppocr6_onnx_ori=r'models/ppocr6_textline_ori.onnx',
         ppocr6_onnx_rec=None,
         ppocr6_dict=None,
-        model_size='small',
+        model_size='medium',
         use_gpu=False,
     ):
         preset = self.MODEL_PRESETS.get(model_size, self.MODEL_PRESETS['medium'])

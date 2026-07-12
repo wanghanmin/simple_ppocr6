@@ -1,22 +1,26 @@
-__pycache__/
-*.py[cod]
-*.pyo
-
-# IDE
-.vscode/
-.idea/
-
-# 虚拟环境 / Virtual envs
-.venv/
-.venv-paddle/
-venv/
-
-# 临时 / benchmark 产物
-*.log
-*.npy
-*.tmp
-*.err
-tmp_*.err
-bench_1080p.jpg
-compare_*.jpg
-clip_*.jpg
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# 虚拟环境 / Virtual envs
+.venv/
+.venv-paddle/
+venv/
+
+# 临时 / benchmark 产物
+*.log
+*.npy
+*.tmp
+*.err
+tmp_*.err
+bench_1080p.jpg
+compare_*.jpg
+clip_*.jpg
+
+# 可选规格模型（clone 仅含 medium，tiny/small 请 download_models.py 下载）
+models/ppocr6_t_*
+models/ppocr6_s_*

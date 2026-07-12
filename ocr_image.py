@@ -21,8 +21,8 @@ def main():
     parser.add_argument(
         "--model-size",
         choices=["tiny", "small", "medium"],
-        default="small",
-        help="model preset (default: small)",
+        default="medium",
+        help="model preset (default: medium)",
     )
     parser.add_argument("--gpu", action="store_true", help="use CUDAExecutionProvider")
     args = parser.parse_args()
