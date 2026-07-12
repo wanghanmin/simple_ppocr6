@@ -1,0 +1,5 @@
+#!/bin/sh
+# Strip Cursor Agent co-author trailer (prevents cursoragent on GitHub Contributors).
+sed -i.bak '/cursoragent@cursor\.com/d' "$1" 2>/dev/null || sed -i '/cursoragent@cursor\.com/d' "$1"
+sed -i.bak '/Co-authored-by: Cursor/d' "$1" 2>/dev/null || sed -i '/Co-authored-by: Cursor/d' "$1"
+rm -f "$1.bak"

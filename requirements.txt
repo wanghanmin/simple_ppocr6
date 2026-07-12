@@ -1,0 +1,6 @@
+onnxruntime
+opencv-python
+
+# Only required for ocr-http-service.py:
+# flask
+# waitress
